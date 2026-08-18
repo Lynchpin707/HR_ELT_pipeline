@@ -1,0 +1,146 @@
+version: 2
+
+sources:
+  - name: destination_db
+    schema: public
+    description: "HR sample database from sqltutorial.org"
+    tables:
+      - name: regions
+        columns:
+          - name: region_id
+            tests:
+              - unique
+              - not_null
+          - name: region_name
+            tests:
+              - not_null
+
+      - name: countries
+        columns:
+          - name: country_id
+            tests:
+              - unique
+              - not_null
+          - name: country_name
+            tests:
+              - not_null
+          - name: region_id
+            tests:
+              - not_null
+              # Ensure the region_id actually exists in the regions table
+              - relationships:
+                  to: source('destination_database', 'regions')
+                  field: region_id
+
+      - name: locations
+        columns:
+          - name: location_id
+            tests:
+              - unique
+              - not_null
+          - name: street_address
+          - name: postal_code
+          - name: city
+            tests:
+              - not_null
+          - name: state_province
+          - name: country_id
+            tests:
+              - not_null
+              - relationships:
+                  to: source('destination_database', 'countries')
+                  field: country_id
+
+      - name: departments
+        columns:
+          - name: department_id
+            tests:
+              - unique
+              - not_null
+          - name: department_name
+            tests:
+              - not_null
+          - name: location_id
+            tests:
+              - relationships:
+                  to: source('destination_database', 'locations')
+                  field: location_id
+
+      - name: jobs
+        columns:
+          - name: job_id
+            tests:
+              - unique
+              - not_null
+          - name: job_title
+            tests:
+              - not_null
+          - name: min_salary
+          - name: max_salary
+
+      - name: employees
+        columns:
+          - name: employee_id
+            tests:
+              - unique
+              - not_null
+          - name: first_name
+            tests:
+              - not_null
+          - name: last_name
+            tests:
+              - not_null
+          - name: email
+            tests:
+              - unique
+              - not_null
+          - name: phone_number
+          - name: hire_date
+            tests:
+              - not_null
+          - name: job_id
+            tests:
+              - not_null
+              - relationships:
+                  to: source('destination_database', 'jobs')
+                  field: job_id
+          - name: salary
+            tests:
+              - not_null
+          - name: manager_id
+            tests:
+              # Employees might not have a manager (e.g., the CEO), 
+              # but if they do, that manager must be in the employees table.
+              - relationships:
+                  to: source('destination_database', 'employees')
+                  field: employee_id
+          - name: department_id
+            tests:
+              - relationships:
+                  to: source('destination_database', 'departments')
+                  field: department_id
+
+      - name: dependents
+        columns:
+          - name: dependent_id
+            tests:
+              - unique
+              - not_null
+          - name: first_name
+            tests:
+              - not_null
+          - name: last_name
+            tests:
+              - not_null
+          - name: relationship
+            tests:
+              - not_null
+              # Restrict to a specific list of values
+              - accepted_values:
+                  values: ['Child', 'Spouse', 'Parent', 'Other']
+          - name: employee_id
+            tests:
+              - not_null
+              - relationships:
+                  to: source('destination_database', 'employees')
+                  field: employee_id

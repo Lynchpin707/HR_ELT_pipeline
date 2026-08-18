@@ -1,0 +1,25 @@
+# dbt artifacts and compiled code
+target/
+modules/
+dbt_modules/
+dbt_packages/
+
+# Logs and debug files
+logs/
+*.log
+dbt.log
+query_log.sql
+
+# Local user configurations and credentials
+profiles.yml
+user.yml
+.env
+secrets/
+
+# Python / OS environment defaults (if using dbt-core CLI)
+__pycache__/
+*.pyc
+.venv/
+env/
+venv/
+.DS_Store

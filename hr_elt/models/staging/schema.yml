@@ -1,0 +1,61 @@
+version: 2
+
+models:
+      - name: regions
+        description: "Stores data of regions (e.g., Asia, Europe)."
+        columns:
+          - name: region_id
+            tests: [unique, not_null]
+          - name: region_name
+
+      - name: countries
+        description: "Stores data of countries where the company operates."
+        columns:
+          - name: country_id
+            tests: [unique, not_null]
+          - name: region_id
+            tests: [relationships(to=ref('regions'), field=region_id)]
+
+      - name: locations
+        description: "Stores addresses of company departments."
+        columns:
+          - name: location_id
+            tests: [unique, not_null]
+          - name: country_id
+            tests: [relationships(to=ref('countries'), field=country_id)]
+
+      - name: departments
+        description: "Stores department data."
+        columns:
+          - name: department_id
+            tests: [unique, not_null]
+          - name: location_id
+            tests: [relationships(to=ref('locations'), field=location_id)]
+
+      - name: jobs
+        description: "Stores job titles and salary ranges."
+        columns:
+          - name: job_id
+            tests: [unique, not_null]
+
+      - name: employees
+        description: "Stores personnel data."
+        columns:
+          - name: employee_id
+            tests: [unique, not_null]
+          - name: email
+            tests: [unique, not_null]
+          - name: job_id
+            tests: [relationships(to=ref('jobs'), field=job_id)]
+          - name: department_id
+            tests: [relationships(to=ref('departments'), field=department_id)]
+          - name: manager_id
+            tests: [relationships(to=ref('employees'), field=employee_id)]
+
+      - name: dependents
+        description: "Stores employee dependents."
+        columns:
+          - name: dependent_id
+            tests: [unique, not_null]
+          - name: employee_id
+            tests: [relationships(to=ref('employees'), field=employee_id)]
